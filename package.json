@@ -1,7 +1,9 @@
 {
-  "name": "job-board-ui",
+  "name": "@oscar-g/job-board-ui",
   "version": "0.1.0",
-  "private": true,
+  "description": "A simple UI for a job board",
+  "author": "Oscar Gonzalez <contact@oscargonalez.info>",
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
