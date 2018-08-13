@@ -1,4 +1,6 @@
-# ui
+# job-board-ui
+
+A simple UI for a job board.
 
 ## Project setup
 ```
