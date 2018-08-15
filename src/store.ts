@@ -26,10 +26,11 @@ export default new Vuex.Store({
       commit('fetchingPosts', true);
 
       return axios.get('jobs/latest').then((res) => {
-        commit('setPosts', res.data);
+        commit('setPosts', res.data.posts);
         commit('fetchingPosts', false);
         return res;
-      });
+      // tslint:disable-next-line:no-console
+      }).catch(console.log);
     },
   },
 });

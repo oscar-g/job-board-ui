@@ -5,19 +5,35 @@
       form: input
     section
       h1 Recent Jobs
-      ul
-        li job 1
-        li job 2
+      p(v-if='fetching') Fetching posts...
+      div(v-if='!fetching')
+        post-list(v-bind:posts="posts")
+
+
 </template>
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-// import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
+import PostList from '@/components/PostList.vue';
 
 @Component({
   components: {
-    // HelloWorld,
+    PostList,
+  },
+  computed: {
+    posts() {
+      return this.$store.state.posts.data;
+    },
+    fetching() {
+      return this.$store.state.posts.fetching;
+    },
   },
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+  public loading: boolean = true;
+
+  public mounted() {
+    this.$store.dispatch('fetchPosts');
+  }
+}
 </script>
