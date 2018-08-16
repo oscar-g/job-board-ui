@@ -4,9 +4,11 @@ ul
     p
       b {{post.title}}
     p
-      span company name
-      span &nbsp;-&nbsp;
-      span {{post.location}}
+      span {{post.company.name}}
+      span(v-if="post.company.tagline")
+        span &nbsp;-&nbsp;
+        i {{post.company.tagline}}
+    p {{post.location}}
     p {{post.description}}
     p: nav
       a(href="#") view
@@ -14,7 +16,7 @@ ul
       a(href="#") add to favorites
       span &nbsp;|&nbsp;
       a(href="#") hide
-    pre {{post}}
+    //- pre {{post}}
 </template>
 
 <script lang="ts">
