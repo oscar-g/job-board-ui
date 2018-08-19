@@ -10,7 +10,7 @@
             :key="key"
             :schema="field"
             :fieldName="key"
-            :prefix="name"
+            :formName="name"
           )
 </template>
 

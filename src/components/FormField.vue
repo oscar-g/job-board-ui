@@ -5,22 +5,22 @@
   .field-body
     .field(v-if="hasTag('wysiwyg')")
       .control.wysiwyg
-        textarea.textarea(:name="fieldName", :id="controlId")
+        textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
     .field(v-else-if="hasTag('textarea')")
       .control
-        textarea.textarea(:name="fieldName", :id="controlId")
+        textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
     .field.is-narrow(v-else-if="hasTag('radio')")
       .control
         label.radio(v-for="(label, key) in radioValues")
-          input(type="radio", :name="fieldName", :value="key")
+          input(type="radio", :name="fieldName", :value="key" v-model="model")
           |  {{ label }}
     .field.is-narrow(v-else-if="hasTag('cb') && isType('boolean')")
       .control
         label.checkbox
-          input(type="checkbox", :name="fieldName", :value="true", :id="controlId")
+          input(type="checkbox", :name="fieldName", :value="true", :id="controlId" v-model="model")
     .field(v-else)
       .control.is-expanded
-        input.input(:name="fieldName" type="text", :id="controlId")
+        input.input(:name="fieldName" type="text", :id="controlId" v-model="model")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
@@ -30,7 +30,7 @@ import {Description} from 'joi';
 export default class FormField extends Vue {
   @Prop() public schema: Description;
   @Prop() public fieldName: string;
-  @Prop() public prefix: string;
+  @Prop() public formName: string;
 
   /**
    * Classes for the field label.
@@ -49,7 +49,7 @@ export default class FormField extends Vue {
    * The id of the input control element
    */
   get controlId(): string {
-    return `${this.prefix}Form${this.fieldName[0].toUpperCase()}${this.fieldName.slice(1)}`;
+    return `${this.formName}Form${this.fieldName[0].toUpperCase()}${this.fieldName.slice(1)}`;
   }
   /**
    * Attributes for the field <label> element
@@ -74,6 +74,20 @@ export default class FormField extends Vue {
     }
 
     return {};
+  }
+
+  get model(): any {
+    // console.log('model getter', this.$store.getters.formData(this.formName, this.fieldName))
+    return this.$store.getters.formData(this.formName, this.fieldName);
+  }
+
+  set model(value: any) {
+    // console.log('model setter', {value}, this.$store.getters.formData(this.formName, this.fieldName))
+    this.$store.commit('formInput', {
+      value,
+      form: this.formName,
+      field: this.fieldName,
+    });
   }
 
   /**
