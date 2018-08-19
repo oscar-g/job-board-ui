@@ -2,40 +2,11 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import axios from 'axios';
 
-import { jobFormSchema, userFormSchema, companyFormSchema } from '@oscar-g/job-board-schema';
-import { Description, ObjectSchema } from 'joi';
+import { Description } from 'joi';
+import { initialFormState, FormName } from '@/store/form';
 
 Vue.use(Vuex);
 
-interface IFormData {[k: string]: any; }
-
-interface IFormState {
-  schema: ObjectSchema;
-  data: IFormData;
-}
-
-interface IForms {
-  job: IFormState;
-  user: IFormState;
-  company: IFormState;
-}
-
-type FormName = keyof IForms;
-
-const initialFormState = {
-  job: {
-    schema: jobFormSchema,
-    data:  {} as IFormData,
-  },
-  user: {
-    schema: userFormSchema,
-    data: {} as IFormData,
-  },
-  company: {
-    schema: companyFormSchema,
-    data: {} as IFormData,
-  },
-};
 
 export default new Vuex.Store({
   strict: true,
