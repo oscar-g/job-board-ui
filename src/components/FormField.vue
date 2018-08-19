@@ -1,14 +1,14 @@
 <template lang="pug"> 
 .field.is-horizontal
-  .field-label(:class="labelClass")
-    label.label {{schema.label || fieldName}}
+  .field-label(:class="fieldLabelClass")
+    label.label(v-bind="labelAttributes") {{schema.label || fieldName}}
   .field-body
     .field(v-if="hasTag('wysiwyg')")
       .control.wysiwyg
-        textarea.textarea(:name="fieldName")
+        textarea.textarea(:name="fieldName", :id="controlId")
     .field(v-else-if="hasTag('textarea')")
       .control
-        textarea.textarea(:name="fieldName")
+        textarea.textarea(:name="fieldName", :id="controlId")
     .field.is-narrow(v-else-if="hasTag('radio')")
       .control
         label.radio(v-for="(label, key) in radioValues")
@@ -17,10 +17,10 @@
     .field.is-narrow(v-else-if="hasTag('cb') && isType('boolean')")
       .control
         label.checkbox
-          input(type="checkbox", :name="fieldName", :value="true")
+          input(type="checkbox", :name="fieldName", :value="true", :id="controlId")
     .field(v-else)
       .control.is-expanded
-        input.input(:name="fieldName" type="text")
+        input.input(:name="fieldName" type="text", :id="controlId")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
@@ -35,7 +35,7 @@ export default class FormField extends Vue {
   /**
    * Classes for the field label.
    */
-  get labelClass(): string[] {
+  get fieldLabelClass(): string[] {
     const c = new Array<string>();
 
     if (!this.hasTag('radio') && !this.hasTag('cb')) {
@@ -43,6 +43,24 @@ export default class FormField extends Vue {
     }
 
     return c;
+  }
+
+  /**
+   * The id of the input control element
+   */
+  get controlId(): string {
+    return `${this.prefix}Form${this.fieldName[0].toUpperCase()}${this.fieldName.slice(1)}`;
+  }
+  /**
+   * Attributes for the field <label> element
+   */
+  get labelAttributes(): {[k: string]: string} {
+    const atts: {[k: string]: string} = {};
+
+    // unless radio, add the "for attribute"
+    atts.for = this.controlId;
+
+    return atts;
   }
 
   /**
