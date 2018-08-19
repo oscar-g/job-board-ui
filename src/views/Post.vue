@@ -3,7 +3,13 @@
     h1 Post your job in minutes!
     div(v-for="(schema, name) in forms")
       form(:id="name + 'Form'")
-        form-field(v-for="(field, key) in schema", :schema="field", :fieldName="key", :prefix="name")
+        form-field(
+          v-for="(field, key) in schema"
+          :key="key"
+          :schema="field"
+          :fieldName="key"
+          :prefix="name"
+        )
 </template>
 
 <script lang="ts">
