@@ -104,4 +104,6 @@ export default class FormField extends Vue {
 <style lang="sass">
 @import 'bulma/sass/utilities/_all.sass'
 @import 'bulma/sass/elements/form.sass'
+.field-body
+  flex-grow 4
 </style>

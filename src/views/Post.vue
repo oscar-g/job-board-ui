@@ -1,15 +1,17 @@
 <template lang="pug">
-  section.post-form
+  section.post.container.is-widescreen
     h1 Post your job in minutes!
-    div(v-for="(schema, name) in forms")
+    div.post__step(v-for="(schema, name) in forms")
       form(:id="name + 'Form'")
-        form-field(
-          v-for="(field, key) in schema"
-          :key="key"
-          :schema="field"
-          :fieldName="key"
-          :prefix="name"
-        )
+        fieldset
+          legend(v-if="schema.label") {{schema.label}}
+          form-field(
+            v-for="(field, key) in schema.children"
+            :key="key"
+            :schema="field"
+            :fieldName="key"
+            :prefix="name"
+          )
 </template>
 
 <script lang="ts">
@@ -22,16 +24,18 @@ import FormField from '../components/FormField.vue';
 })
 export default class Post extends Vue {
   public forms = {
-    job: jobFormSchema.describe().children,
-    user: userFormSchema.describe().children,
-    comp: companyFormSchema.describe().children,
+    job: jobFormSchema.describe(),
+    user: userFormSchema.describe(),
+    comp: companyFormSchema.describe(),
   };
 }
 </script>
 
-<style lang="stylus" scoped>
-.post-form
-  max-width 768px
-  padding 1em
+<style lang="sass" scoped>
+@import 'bulma/sass/utilities/_all.sass';
+@import 'bulma/sass/elements/container.sass';
+.post
+  &__step
+    &:not(:last-child)
+      margin-bottom: $size-4
 </style>
-

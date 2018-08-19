@@ -15,7 +15,7 @@
           .navbar-item: router-link(to="/post") Post
     .main: router-view
 </template>
-<style lang="scss" scoped>
-@import "bulma/sass/utilities/_all.sass";
-@import 'bulma/sass/components/navbar.sass';
+<style lang="sass">
+@import 'bulma/sass/utilities/_all.sass'
+@import 'bulma/sass/base/_all.sass'
 </style>
