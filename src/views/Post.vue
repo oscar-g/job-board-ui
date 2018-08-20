@@ -16,17 +16,20 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { jobFormSchema, userFormSchema, companyFormSchema } from '@oscar-g/job-board-schema';
 import FormField from '../components/FormField.vue';
+import { Description } from 'joi';
 
 @Component({
   components: { FormField },
 })
 export default class Post extends Vue {
-  public forms = {
-    job: jobFormSchema.describe(),
-    user: userFormSchema.describe(),
-    comp: companyFormSchema.describe(),
+  /**
+   * Forms rendered in this view.
+   * Should be the description() of a Joi.Object()
+   */
+  public forms: {[k: string]: Description} = {
+    job: this.$store.getters.formDescription('job'),
+    company: this.$store.getters.formDescription('company'),
   };
 }
 </script>
