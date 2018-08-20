@@ -11,11 +11,14 @@
       .control
         textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
       form-field-help(:formName="formName", :fieldName="fieldName")
-    .field.is-narrow(v-else-if="hasTag('radio')")
+    .field.is-narrow(v-else-if="hasTag('radio') && isType('boolean')")
       .control
-        label.radio(v-for="(label, key) in radioValues")
-          input(type="radio", :name="fieldName", :value="key" v-model="model")
-          |  {{ label }}
+        label.radio()
+          input(type="radio", :name="fieldName", :value="true" v-model="model")
+          |  {{ radioBooleanLabels.true }}
+        label.radio()
+          input(type="radio", :name="fieldName", :value="false" v-model="model")
+          |  {{ radioBooleanLabels.false }}
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('cb') && isType('boolean')")
       .control
@@ -72,16 +75,18 @@ export default class FormField extends Vue {
   }
 
   /**
-   * Map of label => value, for the radio field.
+   * Labels for boolean type radio
    *
-   * Do not call unless hasTag('radio')
+   * Do not call unless hasTag('radio') and boolean type
    */
-  get radioValues(): {[k: string]: string} {
-    if (this.schema.meta) {
-      return this.schema.meta[0].label;
-    }
-
-    return {};
+  get radioBooleanLabels(): {
+    true: string,
+    false: string,
+  } {
+    return {
+      true: this.getMeta('labelTrue'),
+      false: this.getMeta('labelFalse'),
+    };
   }
 
   get model(): any {
@@ -132,6 +137,17 @@ export default class FormField extends Vue {
     }
 
     return false;
+  }
+
+  public getMeta(name: string): any {
+    let value = null;
+
+
+    (this.schema.meta || []).forEach(x => {
+      if (x[name]) { value = x[name]; }
+    });
+
+    return value;
   }
 }
 </script>
