@@ -58,20 +58,27 @@ export const getSchemaChildren = (schema: ObjectSchema): ISchemaChild[] => {
   return [];
 };
 
-export const getInitialFormState = (schema: ObjectSchema): IFormState => {
+export const getInitialFormState = (formSchema: ObjectSchema): IFormState => {
   const fieldState: IMap<IFieldState> = {};
 
-  if ((schema as any)._inner) {
+  if ((formSchema as any)._inner) {
     // set up initial state for child fields
-    const schemaChildren = getSchemaChildren(schema);
+    const schemaChildren = getSchemaChildren(formSchema);
 
-    schemaChildren.forEach(({key}) => {
+    schemaChildren.forEach(({key, schema}) => {
       fieldState[key] = { ...initialFieldState };
+
+      // initialize default value
+      if ((schema as any)._flags.hasOwnProperty('default')) {
+        console.log('default',  (schema as any)._flags.default)
+        fieldState[key].value = (schema as any)._flags.default;
+      }
+      // console.log(schema)
     });
   }
 
   return {
-    schema: Object.freeze(schema),
+    schema: Object.freeze(formSchema),
     fieldState,
   };
 };
