@@ -6,27 +6,35 @@
     .field(v-if="hasTag('wysiwyg')")
       .control.wysiwyg
         textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
+      form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else-if="hasTag('textarea')")
       .control
         textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
+      form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('radio')")
       .control
         label.radio(v-for="(label, key) in radioValues")
           input(type="radio", :name="fieldName", :value="key" v-model="model")
           |  {{ label }}
+      form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('cb') && isType('boolean')")
       .control
         label.checkbox
           input(type="checkbox", :name="fieldName", :value="true", :id="controlId" v-model="model")
+      form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else)
       .control.is-expanded
         input.input(:name="fieldName" type="text", :id="controlId" v-model="model")
+      form-field-help(:formName="formName", :fieldName="fieldName")
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {Description} from 'joi';
+import FormFieldHelp from './FormFieldHelp.vue';
 
-@Component
+@Component({
+  components: { FormFieldHelp },
+})
 export default class FormField extends Vue {
   @Prop() public schema: Description;
   @Prop() public fieldName: string;
@@ -77,13 +85,25 @@ export default class FormField extends Vue {
   }
 
   get model(): any {
-    // console.log('model getter', this.$store.getters.formData(this.formName, this.fieldName))
-    return this.$store.getters.formData(this.formName, this.fieldName);
+    return this.$store.getters.formFieldData(this.formName, this.fieldName);
   }
 
   set model(value: any) {
-    // console.log('model setter', {value}, this.$store.getters.formData(this.formName, this.fieldName))
     this.$store.commit('formInput', {
+      value,
+      form: this.formName,
+      field: this.fieldName,
+    });
+    this.$store.dispatch('validateField', {
+      form: this.formName,
+      field: this.fieldName,
+    });
+    this.$store.commit('setDirty', {
+      value,
+      form: this.formName,
+      field: this.fieldName,
+    });
+    this.$store.commit('setTouched', {
       value,
       form: this.formName,
       field: this.fieldName,
