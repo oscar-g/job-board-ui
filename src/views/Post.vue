@@ -12,6 +12,9 @@
             :fieldName="key"
             :formName="name"
           )
+    div.post__submit
+      button(v-on:click="validateAndSubmit()") Next: Preview
+        
 </template>
 
 <script lang="ts">
@@ -31,6 +34,17 @@ export default class Post extends Vue {
     job: this.$store.getters.formDescription('job'),
     company: this.$store.getters.formDescription('company'),
   };
+
+  public validateAndSubmit() {
+    const p = [
+      this.$store.dispatch('validateForm', 'job'),
+      this.$store.dispatch('validateForm', 'company'),
+    ];
+
+    Promise.all(p)
+      .then(console.log.bind(null, 'valid'))
+      .catch(console.log.bind(null, 'invalid'))
+  }
 }
 </script>
 
@@ -41,4 +55,6 @@ export default class Post extends Vue {
   &__step
     &:not(:last-child)
       margin-bottom: $size-4
+  fieldset
+    padding: 0 $size-4 $size-2;
 </style>

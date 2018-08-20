@@ -142,7 +142,7 @@ export default new Vuex.Store({
     validateForm({commit, getters}, form: FormName) {
       const schema: AnySchema = getters.formSchema(form);
 
-      schema.validate(getters.formData(form), {
+      return schema.validate(getters.formData(form), {
         abortEarly: false,
       }).then((val) => {
           const formChildren: ISchemaChild[] = getters.formChildren(form);
@@ -159,6 +159,8 @@ export default new Vuex.Store({
             commit('clearErrors', payload);
             commit('setValid', payload);
           });
+
+          return val;
         })
         .catch(({ details }) => {
           (details as IValidationErrorDetails[]).forEach((err) => {
@@ -177,19 +179,23 @@ export default new Vuex.Store({
             });
             commit('setInvalid', payload);
           });
+
+          return Promise.reject();
         });
     },
     /**
      * Trigger validation for a single form field
      */
-    validateField({state, commit, getters}, payload: {form: FormName, field: string}) {
+    validateField({commit, getters}, payload: {form: FormName, field: string}) {
       const fieldValue = getters.formFieldData(payload.form, payload.field);
       const schema: AnySchema = getters.formFieldSchema(payload.form, payload.field);
 
-      schema.validate(fieldValue)
+      return schema.validate(fieldValue)
         .then((val) => {
           commit('setValid', payload);
           commit('clearErrors', payload);
+
+          return val;
         })
         .catch((err) => {
           const details: IValidationErrorDetails = err.details[0];
