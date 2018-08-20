@@ -29,5 +29,10 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "post" */ './views/Post.vue'),
     },
+    {
+      path: '/preview',
+      name: 'preview',
+      component: () => import(/* webpackChunkName: "preview" */ './views/Preview.vue'),
+    },
   ],
 });
