@@ -124,6 +124,22 @@ export default new Vuex.Store({
         touched: true,
       };
     },
+    setFocus(state, {form, field}) {
+      const f: IFormState = state.form[form as FormName];
+
+      f.fieldState[field] = {
+        ...f.fieldState[field],
+        focused: true,
+      };
+    },
+    setBlur(state, {form, field}) {
+      const f: IFormState = state.form[form as FormName];
+
+      f.fieldState[field] = {
+        ...f.fieldState[field],
+        focused: false,
+      };
+    },
   },
   actions: {
     fetchPosts({ commit }) {
@@ -209,5 +225,8 @@ export default new Vuex.Store({
           commit('setInvalid', payload);
         });
     },
+    // submitForm(_, form: FormName) {
+
+    // },
   },
 });

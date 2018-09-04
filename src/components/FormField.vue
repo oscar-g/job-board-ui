@@ -5,29 +5,29 @@
   .field-body
     .field(v-if="hasTag('wysiwyg')")
       .control.wysiwyg
-        textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
+        textarea.textarea(:name="fieldName", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else-if="hasTag('textarea')")
       .control
-        textarea.textarea(:name="fieldName", :id="controlId" v-model="model")
+        textarea.textarea(:name="fieldName", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('radio') && isType('boolean')")
       .control
         label.radio()
-          input(type="radio", :name="fieldName", :value="true" v-model="model")
+          input(type="radio", :name="fieldName", :value="true" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
           |  {{ radioBooleanLabels.true }}
         label.radio()
-          input(type="radio", :name="fieldName", :value="false" v-model="model")
+          input(type="radio", :name="fieldName", :value="false" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
           |  {{ radioBooleanLabels.false }}
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('cb') && isType('boolean')")
       .control
         label.checkbox
-          input(type="checkbox", :name="fieldName", :value="true", :id="controlId" v-model="model")
+          input(type="checkbox", :name="fieldName", :value="true", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else)
       .control.is-expanded
-        input.input(:name="fieldName" type="text", :id="controlId" v-model="model")
+        input.input(:name="fieldName" type="text", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
       form-field-help(:formName="formName", :fieldName="fieldName")
 </template>
 <script lang="ts">
@@ -104,12 +104,28 @@ export default class FormField extends Vue {
       field: this.fieldName,
     });
     this.$store.commit('setDirty', {
-      value,
       form: this.formName,
       field: this.fieldName,
     });
     this.$store.commit('setTouched', {
-      value,
+      form: this.formName,
+      field: this.fieldName,
+    });
+  }
+
+  public onFocus() {
+    this.$store.commit('setFocus', {
+      form: this.formName,
+      field: this.fieldName,
+    });
+    this.$store.commit('setTouched', {
+      form: this.formName,
+      field: this.fieldName,
+    });
+  }
+
+  public onBlur() {
+    this.$store.commit('setBlur', {
       form: this.formName,
       field: this.fieldName,
     });
