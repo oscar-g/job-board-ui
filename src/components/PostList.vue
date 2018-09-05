@@ -1,5 +1,5 @@
 <template lang="pug">
-ul
+ul.post-list
   li(v-for="post in posts")
     p
       b {{post.title}}
@@ -11,7 +11,7 @@ ul
     p {{post.location}}
     p {{post.description}}
     p: nav
-      a(href="#") view
+      router-link(:to="{ name: 'postDetail', params: { id: post.id } }") view
       span &nbsp;|&nbsp;
       a(href="#") add to favorites
       span &nbsp;|&nbsp;

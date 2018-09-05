@@ -22,6 +22,11 @@ export default new Vuex.Store({
     form: initialFormState,
   },
   getters: {
+    postById: ({posts}) => (id) => {
+      const r = posts.data.filter(_ => _.id === id);
+
+      return r.length === 1 ? r[0] : null;
+    },
     formSchema: ({form}) => (name: FormName): ObjectSchema => {
       return form[name].schema;
     },
@@ -66,6 +71,11 @@ export default new Vuex.Store({
     },
     setPosts(state, payload) {
       state.posts.data = payload;
+    },
+    setPost(state, payload) {
+      console.log("TODO")
+      // const post = 
+      // (state.posts.data as any[]).filter(_ => _.id = payload.id)
     },
     formInput(state, {form, field, value}) {
       const f = state.form[form as FormName];
@@ -142,6 +152,16 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    getPost({commit}, id: number) {
+      commit('fetchingPosts', true);
+
+      return axios.get(`job/${id}`).then((res) => {
+        commit('setPost', res.data.post);
+        commit('fetchingPosts', false);
+        return res.data;
+      // tslint:disable-next-line:no-console
+      }).catch(console.log);
+    },
     fetchPosts({ commit }) {
       commit('fetchingPosts', true);
 
