@@ -1,6 +1,34 @@
 <template lang="pug">
-  div
-    p post detail {{id}}
+  article.post-detail(v-if="post")
+    header
+      h1 {{ post.title }}
+      p {{ post.company.name }}
+
+    section.meta
+      p
+        b Location:&nbsp;
+        span {{ post.location }} 
+      p
+        b Workload:&nbsp;
+        span {{ post.fulltime ? 'Fulltime': 'Part-time' }}
+      p
+        b Job Type:&nbsp;
+        span {{ post.contract ? 'Contractor': 'Employment' }}
+      p(v-if="post.reloc")
+        b Relocation Assistance:&nbsp;
+        span {{ post.reloc ? 'Yes': 'No'}}
+      p(v-if="post.visa")
+        b Visa Sponsorship:&nbsp;
+        span {{ post.visa ? 'Yes': 'No'}}
+
+    section.content
+      p {{post.description}}
+
+    hr
+    footer
+      p
+        b To Apply: 
+        span {{post.instructions}}
     pre {{post}}
 </template>
 <script lang="ts">

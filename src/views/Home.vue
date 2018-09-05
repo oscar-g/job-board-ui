@@ -3,7 +3,7 @@
     section.sign-up
       h1 sign up for job updates
       form: input
-    section
+    section.latest-posts
       h1 Recent Jobs
       p(v-if='fetching') Fetching posts...
       div(v-if='!fetching')

@@ -1,7 +1,7 @@
 <template lang="pug">
-  section.post.container.is-widescreen
+  section.create-post.container.is-widescreen
     h1 Post your job in minutes!
-    div.post__step(v-for="(schema, name) in forms")
+    div.create-post__step(v-for="(schema, name) in forms")
       form(:id="name + 'Form'")
         fieldset
           legend(v-if="schema.label") {{schema.label}}
@@ -12,7 +12,7 @@
             :fieldName="key"
             :formName="name"
           )
-    div.post__submit
+    div.create-post__submit
       button(v-on:click="validateAndSubmit()") Next: Preview
         
 </template>
@@ -52,7 +52,7 @@ export default class Post extends Vue {
 <style lang="sass" scoped>
 @import 'bulma/sass/utilities/_all.sass';
 @import 'bulma/sass/elements/container.sass';
-.post
+.create-post
   &__step
     &:not(:last-child)
       margin-bottom: $size-4
