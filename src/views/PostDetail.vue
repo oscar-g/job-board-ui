@@ -7,22 +7,22 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component({
-  data: function() {
+  data() {
     return {
       fetching: false,
-      post: this.$store.getters.postById(this.id),
-    }
-  }
+      post: null, //this.$store.getters.postById(this.id),
+    };
+  },
 })
 export default class Preview extends Vue {
-  @Prop(Number) id!: number
+  @Prop(Number) public id!: number;
   public post: any;
   public fetching: boolean;
 
-  mounted() {
+  public mounted() {
     this.fetching = true;
     this.$store.dispatch('getPost', this.id)
-      .then(post => {
+      .then((post) => {
         this.fetching = false;
         this.post = post;
       });

@@ -43,10 +43,8 @@ export default class Post extends Vue {
 
     Promise.all(p)
       .then(([job, company]) => {
-        console.log('valid', {job, company})
-        this.$router.push('/preview')
+        this.$router.push('/preview');
       })
-      .catch(console.log.bind(null, 'invalid'))
   }
 }
 </script>

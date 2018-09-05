@@ -159,7 +159,7 @@ export default class FormField extends Vue {
     let value = null;
 
 
-    (this.schema.meta || []).forEach(x => {
+    (this.schema.meta || []).forEach((x) => {
       if (x[name]) { value = x[name]; }
     });
 
