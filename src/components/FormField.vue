@@ -1,6 +1,6 @@
 <template lang="pug"> 
 .field.is-horizontal
-  .field-label(:class="fieldLabelClass")
+  .field-label(v-if="!hasTag('hidden')", :class="fieldLabelClass")
     label.label(v-bind="labelAttributes") {{schema.label || fieldName}}
   .field-body
     .field(v-if="hasTag('wysiwyg')")
@@ -13,10 +13,10 @@
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('radio') && isType('boolean')")
       .control
-        label.radio()
+        label.radio
           input(type="radio", :name="fieldName", :value="true" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
           |  {{ radioBooleanLabels.true }}
-        label.radio()
+        label.radio
           input(type="radio", :name="fieldName", :value="false" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
           |  {{ radioBooleanLabels.false }}
       form-field-help(:formName="formName", :fieldName="fieldName")
@@ -25,6 +25,8 @@
         label.checkbox
           input(type="checkbox", :name="fieldName", :value="true", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
       form-field-help(:formName="formName", :fieldName="fieldName")
+    .field.is-narrow(v-else-if="hasTag('hidden')")
+      input(type="hidden", :name="fieldName", :id="controlId")
     .field(v-else)
       .control.is-expanded
         input.input(:name="fieldName" type="text", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
@@ -135,7 +137,7 @@ export default class FormField extends Vue {
    * Determine if the component has the specified tag.
    */
   public hasTag(tag: string): boolean {
-    if (this.schema.tags) {
+    if (this.schema.tags && this.schema.tags.length) {
       if (this.schema.tags.indexOf(tag) > -1) {
         return true;
       }
