@@ -1,5 +1,5 @@
 import { ObjectSchema, AnySchema } from 'joi';
-import { jobFormSchema, userFormSchema, companyFormSchema } from '@oscar-g/job-board-schema';
+import forms from '@oscar-g/job-board-schema';
 
 interface IMap<T> {
   [k: string]: T;
@@ -31,6 +31,8 @@ export interface IFormState {
 export interface IInitialFormState {
   job: IFormState;
   company: IFormState;
+  schedule: IFormState;
+  payment: IFormState;
 }
 
 export interface ISchemaChild {
@@ -81,6 +83,8 @@ export const getInitialFormState = (formSchema: ObjectSchema): IFormState => {
 };
 
 export const initialFormState: IInitialFormState  = {
-  job: getInitialFormState(jobFormSchema),
-  company: getInitialFormState(companyFormSchema),
+  job: getInitialFormState(forms.job),
+  company: getInitialFormState(forms.company),
+  schedule: getInitialFormState(forms.schedule),
+  payment: getInitialFormState(forms.payment),
 };

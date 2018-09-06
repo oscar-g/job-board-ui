@@ -45,5 +45,10 @@ export default new Router({
       name: 'preview',
       component: () => import(/* webpackChunkName: "preview" */ './views/Preview.vue'),
     },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: () => import(/* webpackChunkName: "checkout" */ './views/Checkout.vue'),
+    },
   ],
 });
