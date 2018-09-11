@@ -18,14 +18,14 @@ export default class Preview extends Vue {
   // @todo: if forms are not valid, redirect to "create post"
   // public mounted() {}
 
-  prev() {
-    this.$router.push('/post');
+  public prev() {
+    this.$router.push({ name: 'post' });
   }
 
-  next() {
-    this.$router.push('/checkout');
+  public next() {
+    this.$router.push({ name: 'checkout' });
   }
- 
+
   get post() {
     return {
       ...this.$store.getters.formData('job'),

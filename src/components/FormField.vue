@@ -27,6 +27,10 @@
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field.is-narrow(v-else-if="hasTag('hidden')")
       input(type="hidden", :name="fieldName", :id="controlId")
+    .field(v-else-if="hasTag('stripe-card')")
+      .control.is-expanded
+        div(:id='controlId')
+        form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else)
       .control.is-expanded
         input.input(:name="fieldName" type="text", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
@@ -36,14 +40,74 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {Description} from 'joi';
 import FormFieldHelp from './FormFieldHelp.vue';
+import {getElements} from './../lib/stripe';
 
 @Component({
   components: { FormFieldHelp },
 })
 export default class FormField extends Vue {
-  @Prop() public schema: Description;
+  // @Prop() public schema: Description;
   @Prop() public fieldName: string;
   @Prop() public formName: string;
+
+  get schema() {
+    return this.$store.getters.formDescription(this.formName).children[this.fieldName];
+  }
+
+  public mounted() {
+    if (this.hasTag('stripe-card')) {
+      const card = (getElements() as any).create('card');
+      card.on('focus', () => {
+        this.onFocus();
+      });
+      card.on('blur', () => {
+        this.onBlur();
+      });
+      card.on('change', (event: {
+        complete: boolean,
+        empty: boolean,
+        error?: {
+          type: string,
+          message: string,
+        },
+      }) => {
+        const { complete, empty, error } = event;
+
+        // set field errors, if any
+        if (error) {
+          this.$store.commit('setError', {
+            form: this.formName,
+            field: this.fieldName,
+            message: error.message,
+            type: error.type,
+          });
+
+          this.$store.commit('setDirty', {
+            form: this.formName,
+            field: this.fieldName,
+          });
+        } else {
+          this.$store.commit('clearErrors', {
+            form: this.formName,
+            field: this.fieldName,
+          });
+        }
+
+        // update model to indicate payment is ready for tokenization
+        if (error || !complete || empty) {
+          if (this.model) {
+            // only toggle "off" to avoid triggering dirty/touched/valid checkers early
+            this.model = false;
+          }
+        } else {
+          this.model = true;
+        }
+      });
+
+      // @todo use a ref to support multiple components per pge
+      card.mount(`#${this.controlId}`);
+    }
+  }
 
   /**
    * Classes for the field label.
@@ -160,8 +224,9 @@ export default class FormField extends Vue {
   public getMeta(name: string): any {
     let value = null;
 
-
-    (this.schema.meta || []).forEach((x) => {
+    (this.schema.meta || []).forEach((x: {
+      [k: string]: any,
+    }) => {
       if (x[name]) { value = x[name]; }
     });
 
