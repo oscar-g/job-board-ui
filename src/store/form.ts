@@ -65,13 +65,21 @@ export const getInitialFormState = (formSchema: ObjectSchema): IFormState => {
   if ((formSchema as any)._inner) {
     // set up initial state for child fields
     const schemaChildren = getSchemaChildren(formSchema);
-
+    
     schemaChildren.forEach(({key, schema}) => {
+      const flags: {
+        default?: any;
+      } = (schema as any)._flags;
+
       fieldState[key] = { ...initialFieldState };
 
       // initialize default value
       if ((schema as any)._flags.hasOwnProperty('default')) {
-        fieldState[key].value = (schema as any)._flags.default;
+        if (typeof flags.default === 'function') {
+          fieldState[key].value = flags.default();
+        } else {
+          fieldState[key].value = flags.default;
+        }
       }
     });
   }
