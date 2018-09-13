@@ -65,6 +65,11 @@ export default class FormField extends Vue {
 
   public mounted() {
     if (this.hasTag('stripe-card')) {
+      this.mountStripecard();
+    }
+  }
+
+  private mountStripecard() {
       const card = (getElements() as any).create('card');
       card.on('focus', () => {
         this.onFocus();
@@ -116,7 +121,6 @@ export default class FormField extends Vue {
       // @todo use a ref to support multiple components per pge
       card.mount(`#${this.controlId}`);
     }
-  }
 
   /**
    * Classes for the field label.
