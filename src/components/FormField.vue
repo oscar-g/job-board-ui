@@ -31,6 +31,11 @@
       .control.is-expanded
         div(:id='controlId')
         form-field-help(:formName="formName", :fieldName="fieldName")
+    .field(v-else-if="hasTag('dropdown')")
+      .control.is-expanded
+        select.select(:name="fieldName" type="text", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
+          option(v-for="opt in getMeta('optVal')" :value="opt.value") {{ opt.label }}
+      form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else-if="schema.type === 'date'")
       .control.is-expanded
         input.input(:name="fieldName" type="date", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
