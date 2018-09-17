@@ -21,8 +21,7 @@
       b Visa Sponsorship:&nbsp;
       span {{ visa ? 'Yes': 'No'}}
   hr
-  section.content
-    p {{description}}
+  section.content(v-html="description")
   footer
     p
       b To Apply: 
