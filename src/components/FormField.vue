@@ -1,11 +1,19 @@
 <template lang="pug"> 
 .field.is-horizontal
+  //- div: pre {{ schema }}
   .field-label(v-if="!hasTag('hidden')", :class="fieldLabelClass")
     label.label(v-bind="labelAttributes") {{schema.label || fieldName}}
   .field-body
-    .field(v-if="hasTag('wysiwyg')")
+    .field(v-if="hasTag('wysiwyg') && editorOpts")
       .control.wysiwyg
-        textarea.textarea(:name="fieldName", :id="controlId" v-model="model" v-on:focus="onFocus" v-on:blur="onBlur")
+        quill-editor(
+          :name="fieldName"
+          :id="controlId"
+          :options="editorOpts"
+          @change="model = $event.html"
+          @focus="onFocus()"
+          @blur="onBlur()"
+        )
       form-field-help(:formName="formName", :fieldName="fieldName")
     .field(v-else-if="hasTag('textarea')")
       .control
@@ -48,79 +56,22 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {Description} from 'joi';
+import { getElements } from './../lib/stripe';
+import { quillEditor } from 'vue-quill-editor';
+import { QuillOptionsStatic } from 'quill';
+import 'quill/dist/quill.core.css';
+import 'quill/dist/quill.snow.css';
+
 import FormFieldHelp from './FormFieldHelp.vue';
-import {getElements} from './../lib/stripe';
 
 @Component({
-  components: { FormFieldHelp },
+  components: { FormFieldHelp, quillEditor },
 })
 export default class FormField extends Vue {
-  // @Prop() public schema: Description;
-  @Prop() public fieldName: string;
-  @Prop() public formName: string;
 
   get schema() {
     return this.$store.getters.formDescription(this.formName).children[this.fieldName];
   }
-
-  public mounted() {
-    if (this.hasTag('stripe-card')) {
-      this.mountStripecard();
-    }
-  }
-
-  private mountStripecard() {
-      const card = (getElements() as any).create('card');
-      card.on('focus', () => {
-        this.onFocus();
-      });
-      card.on('blur', () => {
-        this.onBlur();
-      });
-      card.on('change', (event: {
-        complete: boolean,
-        empty: boolean,
-        error?: {
-          type: string,
-          message: string,
-        },
-      }) => {
-        const { complete, empty, error } = event;
-
-        // set field errors, if any
-        if (error) {
-          this.$store.commit('setError', {
-            form: this.formName,
-            field: this.fieldName,
-            message: error.message,
-            type: error.type,
-          });
-
-          this.$store.commit('setDirty', {
-            form: this.formName,
-            field: this.fieldName,
-          });
-        } else {
-          this.$store.commit('clearErrors', {
-            form: this.formName,
-            field: this.fieldName,
-          });
-        }
-
-        // update model to indicate payment is ready for tokenization
-        if (error || !complete || empty) {
-          if (this.model) {
-            // only toggle "off" to avoid triggering dirty/touched/valid checkers early
-            this.model = false;
-          }
-        } else {
-          this.model = true;
-        }
-      });
-
-      // @todo use a ref to support multiple components per pge
-      card.mount(`#${this.controlId}`);
-    }
 
   /**
    * Classes for the field label.
@@ -141,6 +92,7 @@ export default class FormField extends Vue {
   get controlId(): string {
     return `${this.formName}Form${this.fieldName[0].toUpperCase()}${this.fieldName.slice(1)}`;
   }
+
   /**
    * Attributes for the field <label> element
    */
@@ -190,6 +142,24 @@ export default class FormField extends Vue {
       form: this.formName,
       field: this.fieldName,
     });
+  }
+
+  @Prop() public fieldName: string;
+  @Prop() public formName: string;
+
+  /**
+   * Options object for vue-quill-editor
+   */
+  public editorOpts: QuillOptionsStatic|null = null;
+
+  public mounted() {
+    if (this.hasTag('stripe-card')) {
+      this.mountStripecard();
+    }
+
+    if (this.hasTag('wysiwyg')) {
+      this.mountWysiwyg();
+    }
   }
 
   public onFocus() {
@@ -244,6 +214,73 @@ export default class FormField extends Vue {
     });
 
     return value;
+  }
+
+  private mountStripecard() {
+    const card = (getElements() as any).create('card');
+    card.on('focus', () => {
+      this.onFocus();
+    });
+    card.on('blur', () => {
+      this.onBlur();
+    });
+    card.on('change', (event: {
+      complete: boolean,
+      empty: boolean,
+      error?: {
+        type: string,
+        message: string,
+      },
+    }) => {
+      const { complete, empty, error } = event;
+
+      // set field errors, if any
+      if (error) {
+        this.$store.commit('setError', {
+          form: this.formName,
+          field: this.fieldName,
+          message: error.message,
+          type: error.type,
+        });
+
+        this.$store.commit('setDirty', {
+          form: this.formName,
+          field: this.fieldName,
+        });
+      } else {
+        this.$store.commit('clearErrors', {
+          form: this.formName,
+          field: this.fieldName,
+        });
+      }
+
+      // update model to indicate payment is ready for tokenization
+      if (error || !complete || empty) {
+        if (this.model) {
+          // only toggle "off" to avoid triggering dirty/touched/valid checkers early
+          this.model = false;
+        }
+      } else {
+        this.model = true;
+      }
+    });
+
+    // @todo use a ref to support multiple components per pge
+    card.mount(`#${this.controlId}`);
+  }
+
+  private mountWysiwyg() {
+    this.editorOpts = {
+      modules: {
+        toolbar: [
+          [{ size: ['small', false, 'large'] }],
+          ['bold', 'italic', 'underline', 'strike'],
+          ['link'],
+          [{ list: 'ordered' }, { list: 'bullet' }],
+          ['clean'],
+        ],
+      },
+    };
   }
 }
 </script>
