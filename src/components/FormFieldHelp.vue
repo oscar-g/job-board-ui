@@ -1,10 +1,14 @@
 <template lang="pug">
-.field-help(v-if='hasErrors && showErrors')
-  p.help.is-danger(v-for="msg in errors") {{msg}}
+div
+  .field-help(v-if="helpText")
+    p.help.is-info {{ helpText }}
+  .field-help(v-if='hasErrors && showErrors')
+    p.help.is-danger(v-for="msg in errors") {{msg}}
 </template>
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { IFieldState } from '../store/form';
+import { AnySchema } from 'joi';
 
 @Component
 export default class FormFieldHelp extends Vue {
@@ -23,5 +27,12 @@ export default class FormFieldHelp extends Vue {
 
     return !state.valid && state.dirty && state.touched;
   }
+
+  get helpText(): string|null {
+    const field: AnySchema = this.$store.getters.formFieldSchema(this.formName, this.fieldName);
+
+    return field.describe().description || null;
+  }
+
 }
 </script>
