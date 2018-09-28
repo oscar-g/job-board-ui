@@ -217,21 +217,15 @@ export default class FormField extends Vue {
   }
 
   private mountStripecard() {
-    const card = (getElements() as any).create('card');
+    const card = getElements().create('card');
+
     card.on('focus', () => {
       this.onFocus();
     });
     card.on('blur', () => {
       this.onBlur();
     });
-    card.on('change', (event: {
-      complete: boolean,
-      empty: boolean,
-      error?: {
-        type: string,
-        message: string,
-      },
-    }) => {
+    card.on('change', (event) => {
       const { complete, empty, error } = event;
 
       // set field errors, if any

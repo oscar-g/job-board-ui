@@ -1,9 +1,35 @@
-const instance = {
+interface IElement {
+  mount: (id: string) => void;
+  on: (name: string, fn: (event: {
+    complete: boolean,
+    empty: boolean,
+    error?: {
+      type: string,
+      message: string,
+    },
+  }) => any) => void, // check this return type
+}
+
+interface IStripeElements {
+  create: (id?: string) => IElement
+}
+
+interface IStripe {
+  createToken: (element: IElement) => {
+    token: any,
+    error: any,
+  };
+}
+
+const instance: {
+  Stripe: IStripe|null,
+  Elements: IStripeElements|null,
+} = {
   Stripe: null,
   Elements: null,
 };
 
-export const getStripe = () => {
+export const getStripe: () => IStripe = () => {
   if (instance.Stripe) { return instance.Stripe; }
   const key = process.env.VUE_APP_STRIPE_KEY || null;
 
@@ -20,13 +46,13 @@ export const getStripe = () => {
   }
 
   if (instance.Stripe === null) {
-    instance.Stripe = (window as any).Stripe(key);
+    instance.Stripe = (window as any).Stripe(key) as IStripe;
   }
 
   return instance.Stripe;
 };
 
-export const getElements = () => {
+export const getElements: () => IStripeElements = () => {
   if (instance.Elements) { return instance.Elements; }
 
   const s = instance.Stripe || getStripe();
@@ -39,5 +65,5 @@ export const getElements = () => {
     instance.Elements = (s as any).elements();
   }
 
-  return instance.Elements;
+  return instance.Elements as IStripeElements;
 };
