@@ -56,7 +56,7 @@
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import {Description} from 'joi';
-import { getElements } from './../lib/stripe';
+import { getElements, getCard } from './../lib/stripe';
 import { quillEditor } from 'vue-quill-editor';
 import { QuillOptionsStatic } from 'quill';
 import 'quill/dist/quill.core.css';
@@ -217,7 +217,8 @@ export default class FormField extends Vue {
   }
 
   private mountStripecard() {
-    const card = getElements().create('card');
+    getElements();
+    const card = getCard();
 
     card.on('focus', () => {
       this.onFocus();

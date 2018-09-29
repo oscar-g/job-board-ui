@@ -216,7 +216,11 @@ export default new Vuex.Store({
             commit('setInvalid', payload);
           });
 
-          return Promise.reject();
+          return Promise.reject({
+            module: 'validateForm',
+            errors: details,
+            form,
+          });
         });
     },
     /**

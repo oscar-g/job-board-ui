@@ -7,26 +7,32 @@ interface IElement {
       type: string,
       message: string,
     },
-  }) => any) => void, // check this return type
+  }) => any) => void;
 }
 
 interface IStripeElements {
-  create: (id?: string) => IElement
+  create: (id?: string) => IElement;
 }
 
 interface IStripe {
-  createToken: (element: IElement) => {
+  createToken: (element: IElement) => Promise<{
     token: any,
     error: any,
-  };
+  }>;
 }
+
+export {
+  IElement, IStripeElements, IStripe,
+};
 
 const instance: {
   Stripe: IStripe|null,
   Elements: IStripeElements|null,
+  Card: IElement|null,
 } = {
   Stripe: null,
   Elements: null,
+  Card: null,
 };
 
 export const getStripe: () => IStripe = () => {
@@ -66,4 +72,16 @@ export const getElements: () => IStripeElements = () => {
   }
 
   return instance.Elements as IStripeElements;
+};
+
+export const getCard: () => IElement = () => {
+  if (!instance.Elements) {
+    throw new Error('lib/stripe#getCard requires an active Elements instance');
+  }
+
+  if (!instance.Card) {
+    instance.Card = instance.Elements.create('card');
+  }
+
+  return instance.Card;
 };
